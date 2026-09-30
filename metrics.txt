@@ -1,0 +1,14 @@
+best_lin_model
+
+Mean residuals: 0.000000
+RMSE: 0.527194
+Sigma: 0.527200
+R2: 0.924096
+
+
+small_model
+
+Mean residuals: 0.000000
+RMSE: 0.625384
+Sigma: 0.625391
+R2: 0.893188

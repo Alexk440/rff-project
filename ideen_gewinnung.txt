@@ -1,0 +1,100 @@
+Manual feature Engineering:
+
+Daten zeigen sinusartiges Profil im Querschnitt
+
+zusätzliche Basisfeatures hinzufügen oft fragil/schwierig
+
+
+log(x) und log(y) verwendet, da beide variablen nur positive Werte aufweisen
+
+
+log(z) bzw. Transformation der Zielvariable hat nicht funktioniert, da z <= 0
+
+
+Einführung von 
+
+	R (radiales feature): Signal kommt aus einem Zentrum (Annahme); Euklidisch da kreisförmige Struktur in den Daten
+	linearen Features
+	Interaktionen
+	Quadratischen Features
+	logarithmischen Features
+
+
+- Matrix numerisch Instabil/ schlecht konditioniert
+
+Ziel: Numerische Stabilität und in geschlossener Form bleiben
+
+######
+
+Numerische Stabilisierung:
+
+SVD/TSVD
+
+QR-Zerlegung wäre auch möglich gewesen, aber SVD ist auch numerische stabil bei schlecht konditionierten Matrizen, aber gibt mehr Informationen (Singulärwerte) und man kann SVD "verkleinern" in dem man ausgewählte Singulärwerte auf Null setzt, um idealerweise Noise zu entfernen. 
+
+
+
+Einschub TSVD:
+
+Annahme: kleine Singulärwerte Noise
+
+nach Implementierung: schlechteres R2 und Mehr Ausreißer im QQ-Plot
+
+kleine Singulärwerte (s) enthalten doch Information -> TSVD entfernt
+
+
+Ridge-Regularisierung (Verschlechtert R2 -> auf 0 gesetzt, Interpretation: Modell profitiert nicht von zusätzlicher Glättung)
+
+Standardisierung (Verschlechtert R2 -> entfernt, Die Verteilungsform bleibt erhalten nur Mittelwert (mu) und Varianz (sig) werden normiert. Interpretation: ursprüngliche Skalierung der Features enthält offenbar relevante Informationen)
+
+doppelte Regularisierung (TSVD + Ridge) schadet
+
+Ziel: stabile Lösung ohne direktes Inverse von X' * X
+
+
+#####
+
+Einführung von Random Fourier Features (Rff) (Gesucht nach zufälligen Sinus/Cosinus features)
+
+Idee: Monte carlo Approximation des Gauß/RBF Kernels (Approximation konvergiert zum Kernelwert nach Gesetz der großen Zahlen)
+Effizienter als den Rbf Kernel zu berechnen
+
+nicht lineare Muster werden linear modelierbar
+
+D: Anzahl RFF features
+kw_rff: Kernelbreite (Auflösung)
+
+
+zuerst Basisfeatures mit RFF konkateniert
+
+
+später: nur Rff ausreichend, Basis features haben geringeren Einfluss (keine relevante Verbesserung von R2)
+
+
+
+####
+
+Tuning:
+
+Gridsearch über D, Kernelbreite und lambda (Ridge)
+
+Kernelbreite zentraler hyperparameter
+
+lambda nähert sich der Null an
+
+D und lambda kann fixiert werden
+
+
+Modell Komplexität reduziert (Von 8000 zu 300 ähnliche Leistung)
+einfacheres Modell bei vergleichbarer Güte (nach Ockhams razor)
+
+
+
+Ausblick:
+
+Verteilungen von W und b anpassen
+
+Orthogonale Rff
+
+Ausreißer explizit behandeln
+
